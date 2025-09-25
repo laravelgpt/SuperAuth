@@ -1,9 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Vendor\MultiVendorAuth\Http\Controllers\AuthController;
-use Vendor\MultiVendorAuth\Http\Controllers\SocialAuthController;
-use Vendor\MultiVendorAuth\Http\Controllers\AdminController;
+use SuperAuth\Http\Controllers\AuthController;
+use SuperAuth\Http\Controllers\SocialAuthController;
+use SuperAuth\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,5 +55,21 @@ Route::middleware('auth')->group(function () {
         Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('admin.users.update');
         Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
         Route::post('/users/{user}/toggle-status', [AdminController::class, 'toggleUserStatus'])->name('admin.users.toggle-status');
+        
+        // Role management routes
+        Route::get('/roles', [AdminController::class, 'roles'])->name('admin.roles');
+        Route::post('/roles', [AdminController::class, 'createRole'])->name('admin.roles.create');
+        Route::put('/roles/{role}', [AdminController::class, 'updateRole'])->name('admin.roles.update');
+        Route::delete('/roles/{role}', [AdminController::class, 'deleteRole'])->name('admin.roles.delete');
+        
+        // User role assignment routes
+        Route::get('/users/{user}/roles', [AdminController::class, 'userRoles'])->name('admin.users.roles');
+        Route::post('/users/{user}/roles', [AdminController::class, 'assignRole'])->name('admin.users.roles.assign');
+        Route::delete('/users/{user}/roles/{role}', [AdminController::class, 'removeRole'])->name('admin.users.roles.remove');
+        
+        // AI Dashboard routes
+        Route::get('/ai-dashboard', [AdminController::class, 'aiDashboard'])->name('admin.ai-dashboard');
+        Route::get('/analytics', [AdminController::class, 'analytics'])->name('admin.analytics');
+        Route::get('/security-monitoring', [AdminController::class, 'securityMonitoring'])->name('admin.security-monitoring');
     });
 });
