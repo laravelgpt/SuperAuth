@@ -663,6 +663,7 @@ class InstallCommand extends Command
         $this->newLine();
 
         $steps = [
+            'Fixing Laravel artisan file...' => fn() => $this->fixArtisanFile(),
             'Publishing configuration...' => fn() => $this->publishConfiguration(),
             'Publishing migrations...' => fn() => $this->publishMigrations(),
             'Publishing views...' => fn() => $this->publishViews(),
@@ -683,6 +684,97 @@ class InstallCommand extends Command
 
         $progressBar->finish();
         $this->newLine(2);
+    }
+
+    protected function fixArtisanFile()
+    {
+        $artisanPath = base_path('artisan');
+        
+        if (!File::exists($artisanPath)) {
+            $this->warn('⚠️ Artisan file not found, skipping fix');
+            return;
+        }
+
+        $currentContent = File::get($artisanPath);
+        
+        // Check if it's already the correct version
+        if (str_contains($currentContent, 'Illuminate\Contracts\Console\Kernel::class')) {
+            $this->line('  ✅ Artisan file is already compatible');
+            return;
+        }
+
+        // Create backup
+        $backupPath = $artisanPath . '.backup.' . date('Y-m-d-H-i-s');
+        File::put($backupPath, $currentContent);
+        
+        // Write correct content
+        $correctContent = $this->getCorrectArtisanContent();
+        File::put($artisanPath, $correctContent);
+        
+        // Make executable on Unix systems
+        if (PHP_OS_FAMILY !== 'Windows') {
+            chmod($artisanPath, 0755);
+        }
+        
+        $this->line('  ✅ Fixed artisan file for Laravel 11+ compatibility');
+    }
+
+    protected function getCorrectArtisanContent()
+    {
+        return '#!/usr/bin/env php
+<?php
+
+define(\'LARAVEL_START\', microtime(true));
+
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+|
+| Composer provides a convenient, automatically generated class loader
+| for our application. We just need to utilize it! We\'ll require it
+| into the script here so that we do not have to worry about the
+| loading of any our classes "manually". Feels great to relax.
+|
+*/
+
+require __DIR__.\'/vendor/autoload.php\';
+
+$app = require_once __DIR__.\'/bootstrap/app.php\';
+
+/*
+|--------------------------------------------------------------------------
+| Run The Artisan Application
+|--------------------------------------------------------------------------
+|
+| When we run the console application, the current CLI command will be
+| executed in this console and the response sent back to a terminal
+| or another output device for the developers. Here goes nothing!
+|
+*/
+
+$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+
+$status = $kernel->handle(
+    $input = new Symfony\Component\Console\Input\ArgvInput,
+    new Symfony\Component\Console\Output\ConsoleOutput
+);
+
+/*
+|--------------------------------------------------------------------------
+| Shutdown The Application
+|--------------------------------------------------------------------------
+|
+| Once Artisan has finished running, we will fire off the shutdown events
+| so that any final work may be done by the application before we shut
+| down the process. This is the last thing to happen to the request.
+|
+*/
+
+$kernel->terminate($input, $status);
+
+exit($status);
+';
     }
 
     protected function installFrameworkKit()

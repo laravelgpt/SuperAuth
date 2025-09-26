@@ -191,6 +191,7 @@ class SuperAuthServiceProvider extends ServiceProvider
                 \SuperAuth\Console\Commands\CleanupExpiredRolesCommand::class,
                 \SuperAuth\Console\Commands\RoleStatsCommand::class,
                 \SuperAuth\Console\Commands\RemoveCommand::class,
+                \SuperAuth\Console\Commands\FixArtisanCommand::class,
             ]);
         }
     }
