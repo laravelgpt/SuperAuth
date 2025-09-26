@@ -66,6 +66,5 @@ yarn.lock
 /storage/logs
 
 # SuperAuth specific
-/config/superauth.php
 /resources/views/vendor/superauth/
 /public/vendor/superauth/
