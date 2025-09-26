@@ -1,0 +1,56 @@
+{
+    "name": "superauth/superauth",
+    "type": "library",
+    "description": "SuperAuth - The Ultimate Laravel Authentication System with AI-Powered Security, Multi-Channel Notifications, and Advanced Admin Dashboard",
+    "keywords": ["laravel", "authentication", "livewire", "social-auth", "otp", "admin", "ai", "security", "notifications", "dashboard"],
+    "license": "MIT",
+    "homepage": "https://github.com/superauth/superauth",
+    "support": {
+        "issues": "https://github.com/superauth/superauth/issues",
+        "source": "https://github.com/superauth/superauth"
+    },
+    "authors": [
+        {
+            "name": "SuperAuth Team",
+            "email": "team@superauth.dev"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "laravel/framework": "^11.0",
+        "livewire/livewire": "^3.0",
+        "laravel/socialite": "^5.0",
+        "guzzlehttp/guzzle": "^7.0",
+        "spatie/laravel-permission": "^6.0",
+        "laravel/sanctum": "^4.0",
+        "intervention/image": "^3.0",
+        "pusher/pusher-php-server": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0",
+        "orchestra/testbench": "^9.0",
+        "mockery/mockery": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "SuperAuth\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SuperAuth\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SuperAuth\\SuperAuthServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

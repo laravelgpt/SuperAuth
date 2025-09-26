@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         processIsolation="false"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="APP_KEY" value="base64:YourAppKeyHere"/>
+        <env name="DB_CONNECTION" value="sqlite"/>
+        <env name="DB_DATABASE" value=":memory:"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="MAIL_MAILER" value="array"/>
+        <env name="MULTI_VENDOR_AUTH_PREFIX" value="auth"/>
+        <env name="BREACH_CHECK_ENABLED" value="true"/>
+        <env name="BREACH_CHECK_TIMEOUT" value="5"/>
+        <env name="OTP_EXPIRES_IN" value="10"/>
+        <env name="OTP_LENGTH" value="6"/>
+        <env name="OTP_MAX_ATTEMPTS" value="3"/>
+        <env name="PASSWORD_MIN_LENGTH" value="8"/>
+        <env name="PASSWORD_MIN_SCORE" value="3"/>
+        <env name="RATE_LIMITING_ENABLED" value="true"/>
+        <env name="SECURITY_HEADERS_ENABLED" value="true"/>
+        <env name="SECURITY_LOGGING_ENABLED" value="true"/>
+        <env name="PEST_PARALLEL" value="true"/>
+        <env name="PEST_PARALLEL_PROCESSES" value="4"/>
+    </php>
+</phpunit>
