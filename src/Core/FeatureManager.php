@@ -99,6 +99,14 @@ class FeatureManager
     }
 
     /**
+     * Get all features (alias for getAllFeatures)
+     */
+    public function getFeatures(): array
+    {
+        return $this->getAllFeatures();
+    }
+
+    /**
      * Get all features
      */
     public function getAllFeatures(): array
