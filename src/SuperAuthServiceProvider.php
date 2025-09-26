@@ -152,16 +152,18 @@ class SuperAuthServiceProvider extends ServiceProvider
     /**
      * Register console commands.
      */
+
     protected function registerConsoleCommands(): void
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
                 \SuperAuth\Console\Commands\InstallCommand::class,
+                \SuperAuth\Console\Commands\SetupCommand::class,
                 \SuperAuth\Console\Commands\InstallWizardCommand::class,
-        \SuperAuth\Console\Commands\InstallLaravelKitCommand::class,
-        \SuperAuth\Console\Commands\InstallLivewireKitCommand::class,
-        \SuperAuth\Console\Commands\InstallVueKitCommand::class,
-        \SuperAuth\Console\Commands\InstallReactKitCommand::class,
+                \SuperAuth\Console\Commands\InstallLaravelKitCommand::class,
+                \SuperAuth\Console\Commands\InstallLivewireKitCommand::class,
+                \SuperAuth\Console\Commands\InstallVueKitCommand::class,
+                \SuperAuth\Console\Commands\InstallReactKitCommand::class,
                 \SuperAuth\Console\Commands\CreateDefaultRolesCommand::class,
                 \SuperAuth\Console\Commands\CleanupExpiredRolesCommand::class,
                 \SuperAuth\Console\Commands\RoleStatsCommand::class,

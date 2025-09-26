@@ -56,12 +56,17 @@ php artisan vendor:publish --provider="SuperAuth\SuperAuthServiceProvider"
 php artisan migrate
 ```
 
-### **4. Create Default Roles**
+### **4. Setup Database**
+```bash
+php artisan superauth:setup
+```
+
+### **5. Create Default Roles (if not done by setup)**
 ```bash
 php artisan superauth:create-default-roles
 ```
 
-### **5. Choose Your Framework**
+### **6. Choose Your Framework**
 ```bash
 # Laravel Blade Kit
 php artisan superauth:install-laravel-kit
