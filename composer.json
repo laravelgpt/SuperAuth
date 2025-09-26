@@ -2,7 +2,7 @@
     "name": "superauth/superauth",
     "type": "library",
     "description": "SuperAuth - The Ultimate Laravel Authentication System with AI-Powered Security, Multi-Channel Notifications, and Advanced Admin Dashboard",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "keywords": ["laravel", "authentication", "livewire", "social-auth", "otp", "admin", "ai", "security", "notifications", "dashboard"],
     "license": "MIT",
     "homepage": "https://github.com/superauth/superauth",
