@@ -11,30 +11,30 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Register Multi-Vendor Auth middleware
+        // Register SuperAuth middleware
         $middleware->alias([
-            'role.access' => \Vendor\MultiVendorAuth\Middleware\RoleBasedAccessMiddleware::class,
-            'permission.access' => \Vendor\MultiVendorAuth\Middleware\PermissionBasedAccessMiddleware::class,
-            'feature.access' => \Vendor\MultiVendorAuth\Middleware\FeatureAccessMiddleware::class,
-            'security.headers' => \Vendor\MultiVendorAuth\Middleware\SecurityHeadersMiddleware::class,
-            'rate.limit' => \Vendor\MultiVendorAuth\Middleware\RateLimitMiddleware::class,
-            'error.handling' => \Vendor\MultiVendorAuth\Middleware\ErrorHandlingMiddleware::class,
+            'role.access' => \SuperAuth\Middleware\RoleBasedAccessMiddleware::class,
+            'permission.access' => \SuperAuth\Middleware\PermissionBasedAccessMiddleware::class,
+            'feature.access' => \SuperAuth\Middleware\FeatureAccessMiddleware::class,
+            'security.headers' => \SuperAuth\Middleware\SecurityHeadersMiddleware::class,
+            'rate.limit' => \SuperAuth\Middleware\RateLimitMiddleware::class,
+            'error.handling' => \SuperAuth\Middleware\ErrorHandlingMiddleware::class,
         ]);
 
         // Apply security headers to all web routes
         $middleware->web(append: [
-            \Vendor\MultiVendorAuth\Middleware\SecurityHeadersMiddleware::class,
-            \Vendor\MultiVendorAuth\Middleware\ErrorHandlingMiddleware::class,
+            \SuperAuth\Middleware\SecurityHeadersMiddleware::class,
+            \SuperAuth\Middleware\ErrorHandlingMiddleware::class,
         ]);
 
         // Apply rate limiting to authentication routes
         $middleware->group('auth', [
-            \Vendor\MultiVendorAuth\Middleware\RateLimitMiddleware::class,
+            \SuperAuth\Middleware\RateLimitMiddleware::class,
         ]);
 
         // Apply role-based access to admin routes
         $middleware->group('admin', [
-            'role.access:admin,super-admin',
+            'role.access:admin,super_admin',
         ]);
 
         // Apply permission-based access to specific routes
@@ -48,21 +48,21 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // Handle Multi-Vendor Auth specific exceptions
-        $exceptions->render(function (\Vendor\MultiVendorAuth\Exceptions\RoleAccessDeniedException $e) {
-            return response()->view('multi-vendor-auth::errors.role-access-denied', [
+        // Handle SuperAuth specific exceptions
+        $exceptions->render(function (\SuperAuth\Exceptions\RoleAccessDeniedException $e) {
+            return response()->view('superauth::errors.role-access-denied', [
                 'message' => $e->getMessage()
             ], 403);
         });
 
-        $exceptions->render(function (\Vendor\MultiVendorAuth\Exceptions\PermissionAccessDeniedException $e) {
-            return response()->view('multi-vendor-auth::errors.permission-access-denied', [
+        $exceptions->render(function (\SuperAuth\Exceptions\PermissionAccessDeniedException $e) {
+            return response()->view('superauth::errors.permission-access-denied', [
                 'message' => $e->getMessage()
             ], 403);
         });
 
-        $exceptions->render(function (\Vendor\MultiVendorAuth\Exceptions\FeatureAccessDeniedException $e) {
-            return response()->view('multi-vendor-auth::errors.feature-access-denied', [
+        $exceptions->render(function (\SuperAuth\Exceptions\FeatureAccessDeniedException $e) {
+            return response()->view('superauth::errors.feature-access-denied', [
                 'message' => $e->getMessage()
             ], 403);
         });

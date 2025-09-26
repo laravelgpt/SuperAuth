@@ -77,8 +77,17 @@ class SuperAuthServiceProvider extends ServiceProvider
             __DIR__.'/../resources/js' => public_path('vendor/superauth/js'),
         ], 'superauth-assets');
 
-        // Register dynamic routes
-        $this->app->make(DynamicRouter::class)->registerRoutes();
+        // Register dynamic routes (only if not in console or if routes are available)
+        try {
+            if (!$this->app->runningInConsole() || $this->app->runningUnitTests()) {
+                $this->app->make(DynamicRouter::class)->registerRoutes();
+            }
+        } catch (\Exception $e) {
+            // Silently fail during package discovery to avoid bootstrap issues
+            if (!$this->app->runningInConsole()) {
+                throw $e;
+            }
+        }
 
         // Publish bootstrap configuration
         $this->publishes([
@@ -107,21 +116,28 @@ class SuperAuthServiceProvider extends ServiceProvider
      */
     protected function registerMiddleware(): void
     {
-        $router = $this->app['router'];
+        try {
+            $router = $this->app['router'];
+            
+            // Register security middleware
+            $router->aliasMiddleware('security.headers', \SuperAuth\Middleware\SecurityHeadersMiddleware::class);
+            $router->aliasMiddleware('rate.limit', \SuperAuth\Middleware\RateLimitMiddleware::class);
+            $router->aliasMiddleware('role.access', \SuperAuth\Middleware\RoleBasedAccessMiddleware::class);
+            $router->aliasMiddleware('permission.access', \SuperAuth\Middleware\PermissionBasedAccessMiddleware::class);
+            $router->aliasMiddleware('feature.access', \SuperAuth\Middleware\FeatureAccessMiddleware::class);
+            $router->aliasMiddleware('error.handling', \SuperAuth\Middleware\ErrorHandlingMiddleware::class);
         
-        // Register security middleware
-        $router->aliasMiddleware('security.headers', \SuperAuth\Middleware\SecurityHeadersMiddleware::class);
-        $router->aliasMiddleware('rate.limit', \SuperAuth\Middleware\RateLimitMiddleware::class);
-        $router->aliasMiddleware('role.access', \SuperAuth\Middleware\RoleBasedAccessMiddleware::class);
-        $router->aliasMiddleware('permission.access', \SuperAuth\Middleware\PermissionBasedAccessMiddleware::class);
-        $router->aliasMiddleware('feature.access', \SuperAuth\Middleware\FeatureAccessMiddleware::class);
-        $router->aliasMiddleware('error.handling', \SuperAuth\Middleware\ErrorHandlingMiddleware::class);
-    
-        // Apply security headers to all routes
-        $router->pushMiddlewareToGroup('web', \SuperAuth\Middleware\SecurityHeadersMiddleware::class);
-        
-        // Apply error handling to all routes
-        $router->pushMiddlewareToGroup('web', \SuperAuth\Middleware\ErrorHandlingMiddleware::class);
+            // Apply security headers to all routes
+            $router->pushMiddlewareToGroup('web', \SuperAuth\Middleware\SecurityHeadersMiddleware::class);
+            
+            // Apply error handling to all routes
+            $router->pushMiddlewareToGroup('web', \SuperAuth\Middleware\ErrorHandlingMiddleware::class);
+        } catch (\Exception $e) {
+            // Silently fail during package discovery to avoid bootstrap issues
+            if (!$this->app->runningInConsole()) {
+                throw $e;
+            }
+        }
     }
 
     /**
@@ -129,23 +145,30 @@ class SuperAuthServiceProvider extends ServiceProvider
      */
     protected function registerLivewireComponents(): void
     {
-        if (class_exists(\Livewire\Livewire::class)) {
-            Livewire::component('superauth.login', Login::class);
-            Livewire::component('superauth.register', Register::class);
-            Livewire::component('superauth.otp-verification', OtpVerification::class);
-            Livewire::component('superauth.social-login', SocialLogin::class);
-            Livewire::component('superauth.password-reset', PasswordReset::class);
-            Livewire::component('superauth.profile', Profile::class);
-            Livewire::component('superauth.admin-dashboard', Dashboard::class);
-            Livewire::component('superauth.user-management', UserManagement::class);
-            Livewire::component('superauth.password-strength', PasswordStrength::class);
-            Livewire::component('superauth.breach-check', BreachCheck::class);
-            Livewire::component('superauth.enhanced-password-strength', EnhancedPasswordStrength::class);
-            Livewire::component('superauth.enhanced-breach-check', EnhancedBreachCheck::class);
-            Livewire::component('superauth.role-management', RoleManagement::class);
-            Livewire::component('superauth.user-role-assignment', UserRoleAssignment::class);
-            Livewire::component('superauth.ai-dashboard', AiDashboard::class);
-            Livewire::component('superauth.user-dashboard', UserDashboard::class);
+        try {
+            if (class_exists(\Livewire\Livewire::class)) {
+                Livewire::component('superauth.login', Login::class);
+                Livewire::component('superauth.register', Register::class);
+                Livewire::component('superauth.otp-verification', OtpVerification::class);
+                Livewire::component('superauth.social-login', SocialLogin::class);
+                Livewire::component('superauth.password-reset', PasswordReset::class);
+                Livewire::component('superauth.profile', Profile::class);
+                Livewire::component('superauth.admin-dashboard', Dashboard::class);
+                Livewire::component('superauth.user-management', UserManagement::class);
+                Livewire::component('superauth.password-strength', PasswordStrength::class);
+                Livewire::component('superauth.breach-check', BreachCheck::class);
+                Livewire::component('superauth.enhanced-password-strength', EnhancedPasswordStrength::class);
+                Livewire::component('superauth.enhanced-breach-check', EnhancedBreachCheck::class);
+                Livewire::component('superauth.role-management', RoleManagement::class);
+                Livewire::component('superauth.user-role-assignment', UserRoleAssignment::class);
+                Livewire::component('superauth.ai-dashboard', AiDashboard::class);
+                Livewire::component('superauth.user-dashboard', UserDashboard::class);
+            }
+        } catch (\Exception $e) {
+            // Silently fail during package discovery to avoid bootstrap issues
+            if (!$this->app->runningInConsole()) {
+                throw $e;
+            }
         }
     }
 
