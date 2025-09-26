@@ -222,53 +222,330 @@ class InstallCommand extends Command
         $this->info('👥 Step 2: Configure User Roles');
         $this->newLine();
 
-        // Default roles
-        $defaultRoles = [
-            'admin' => 'Administrator - Full system access',
-            'moderator' => 'Moderator - Content and user management',
-            'user' => 'Regular User - Basic access',
-            'guest' => 'Guest - Limited access'
+        // Show role selection options
+        $roleOptions = [
+            'default' => 'Default roles (Admin, User, Customer, Student)',
+            'admin_focused' => 'Admin-focused (Super Admin, Admin, Moderator, User)',
+            'business' => 'Business roles (Admin, Manager, Employee, Customer)',
+            'education' => 'Education roles (Admin, Teacher, Student, Parent)',
+            'custom' => 'Custom role selection',
+            'all' => 'All available roles'
         ];
 
-        $this->line('📋 Default roles that will be created:');
-        foreach ($defaultRoles as $role => $description) {
-            $this->line("  • {$role}: {$description}");
+        $this->line('📋 Role configuration options:');
+        foreach ($roleOptions as $key => $description) {
+            $this->line("  • {$key}: {$description}");
         }
         $this->newLine();
 
-        if ($this->confirm('Do you want to add custom roles?', false)) {
-            $this->addCustomRoles();
-        }
+        $choice = $this->choice(
+            'Select role configuration:',
+            array_keys($roleOptions),
+            'default'
+        );
+
+        $this->configureRoleSelection($choice);
 
         $this->info('✅ Role configuration completed!');
         $this->newLine();
     }
 
-    protected function addCustomRoles()
+    protected function configureRoleSelection($choice)
     {
-        $this->info('➕ Adding Custom Roles');
-        $this->newLine();
-
-        while (true) {
-            $roleName = $this->ask('Enter custom role name (or press Enter to finish)', '');
-            
-            if (empty($roleName)) {
+        switch ($choice) {
+            case 'default':
+                $this->setupDefaultRoles();
                 break;
-            }
-
-            $roleDescription = $this->ask('Enter role description', 'Custom role');
-            $roleLevel = $this->ask('Enter role level (0-100, higher = more permissions)', 50);
-
-            $this->customRoles[] = [
-                'name' => $roleName,
-                'description' => $roleDescription,
-                'level' => (int) $roleLevel
-            ];
-
-            $this->info("✅ Added custom role: {$roleName}");
-            $this->newLine();
+            case 'admin_focused':
+                $this->setupAdminFocusedRoles();
+                break;
+            case 'business':
+                $this->setupBusinessRoles();
+                break;
+            case 'education':
+                $this->setupEducationRoles();
+                break;
+            case 'custom':
+                $this->setupCustomRoleSelection();
+                break;
+            case 'all':
+                $this->setupAllRoles();
+                break;
         }
     }
+
+    protected function setupDefaultRoles()
+    {
+        $this->info('🔧 Setting up default roles...');
+        $this->newLine();
+
+        $defaultRoles = [
+            'admin' => [
+                'name' => 'Admin',
+                'description' => 'System administrator with full access',
+                'level' => 90
+            ],
+            'user' => [
+                'name' => 'User',
+                'description' => 'Regular user with basic access',
+                'level' => 30
+            ],
+            'customer' => [
+                'name' => 'Customer',
+                'description' => 'Customer with purchase and profile access',
+                'level' => 20
+            ],
+            'student' => [
+                'name' => 'Student',
+                'description' => 'Student with learning and profile access',
+                'level' => 25
+            ]
+        ];
+
+        $this->displayRoleTable($defaultRoles);
+        $this->customRoles = array_values($defaultRoles);
+    }
+
+    protected function setupAdminFocusedRoles()
+    {
+        $this->info('👑 Setting up admin-focused roles...');
+        $this->newLine();
+
+        $adminRoles = [
+            'super_admin' => [
+                'name' => 'Super Admin',
+                'description' => 'Super administrator with complete system control',
+                'level' => 100
+            ],
+            'admin' => [
+                'name' => 'Admin',
+                'description' => 'Administrator with full system access',
+                'level' => 90
+            ],
+            'moderator' => [
+                'name' => 'Moderator',
+                'description' => 'Content and user management',
+                'level' => 60
+            ],
+            'user' => [
+                'name' => 'User',
+                'description' => 'Regular user with basic access',
+                'level' => 30
+            ]
+        ];
+
+        $this->displayRoleTable($adminRoles);
+        $this->customRoles = array_values($adminRoles);
+    }
+
+    protected function setupBusinessRoles()
+    {
+        $this->info('💼 Setting up business roles...');
+        $this->newLine();
+
+        $businessRoles = [
+            'admin' => [
+                'name' => 'Admin',
+                'description' => 'System administrator',
+                'level' => 90
+            ],
+            'manager' => [
+                'name' => 'Manager',
+                'description' => 'Department manager with team access',
+                'level' => 70
+            ],
+            'employee' => [
+                'name' => 'Employee',
+                'description' => 'Company employee with work access',
+                'level' => 40
+            ],
+            'customer' => [
+                'name' => 'Customer',
+                'description' => 'External customer with limited access',
+                'level' => 20
+            ]
+        ];
+
+        $this->displayRoleTable($businessRoles);
+        $this->customRoles = array_values($businessRoles);
+    }
+
+    protected function setupEducationRoles()
+    {
+        $this->info('🎓 Setting up education roles...');
+        $this->newLine();
+
+        $educationRoles = [
+            'admin' => [
+                'name' => 'Admin',
+                'description' => 'School administrator',
+                'level' => 90
+            ],
+            'teacher' => [
+                'name' => 'Teacher',
+                'description' => 'Teacher with class and student access',
+                'level' => 60
+            ],
+            'student' => [
+                'name' => 'Student',
+                'description' => 'Student with learning access',
+                'level' => 30
+            ],
+            'parent' => [
+                'name' => 'Parent',
+                'description' => 'Parent with child monitoring access',
+                'level' => 25
+            ]
+        ];
+
+        $this->displayRoleTable($educationRoles);
+        $this->customRoles = array_values($educationRoles);
+    }
+
+    protected function setupCustomRoleSelection()
+    {
+        $this->info('🛠️ Custom role selection...');
+        $this->newLine();
+
+        $availableRoles = [
+            'super_admin' => 'Super Admin - Complete system control',
+            'admin' => 'Admin - Full system access',
+            'moderator' => 'Moderator - Content and user management',
+            'manager' => 'Manager - Department management',
+            'teacher' => 'Teacher - Educational access',
+            'employee' => 'Employee - Work access',
+            'user' => 'User - Basic access',
+            'customer' => 'Customer - Purchase access',
+            'student' => 'Student - Learning access',
+            'parent' => 'Parent - Child monitoring',
+            'guest' => 'Guest - Limited access'
+        ];
+
+        $this->line('📋 Available roles to choose from:');
+        foreach ($availableRoles as $key => $description) {
+            $this->line("  • {$key}: {$description}");
+        }
+        $this->newLine();
+
+        $selectedRoles = $this->ask('Enter role keys separated by commas (e.g., admin,user,customer)', 'admin,user');
+        $roleKeys = array_map('trim', explode(',', $selectedRoles));
+
+        $this->customRoles = [];
+        foreach ($roleKeys as $key) {
+            if (isset($availableRoles[$key])) {
+                $this->customRoles[] = [
+                    'name' => $key,
+                    'description' => $availableRoles[$key],
+                    'level' => $this->getRoleLevel($key)
+                ];
+            }
+        }
+
+        if (!empty($this->customRoles)) {
+            $this->displayRoleTable(array_column($this->customRoles, null, 'name'));
+        }
+    }
+
+    protected function setupAllRoles()
+    {
+        $this->info('🌟 Setting up all available roles...');
+        $this->newLine();
+
+        $allRoles = [
+            'super_admin' => [
+                'name' => 'Super Admin',
+                'description' => 'Super administrator with complete system control',
+                'level' => 100
+            ],
+            'admin' => [
+                'name' => 'Admin',
+                'description' => 'Administrator with full system access',
+                'level' => 90
+            ],
+            'moderator' => [
+                'name' => 'Moderator',
+                'description' => 'Content and user management',
+                'level' => 60
+            ],
+            'manager' => [
+                'name' => 'Manager',
+                'description' => 'Department manager',
+                'level' => 70
+            ],
+            'teacher' => [
+                'name' => 'Teacher',
+                'description' => 'Educational access',
+                'level' => 50
+            ],
+            'employee' => [
+                'name' => 'Employee',
+                'description' => 'Work access',
+                'level' => 40
+            ],
+            'user' => [
+                'name' => 'User',
+                'description' => 'Basic access',
+                'level' => 30
+            ],
+            'customer' => [
+                'name' => 'Customer',
+                'description' => 'Purchase access',
+                'level' => 20
+            ],
+            'student' => [
+                'name' => 'Student',
+                'description' => 'Learning access',
+                'level' => 25
+            ],
+            'parent' => [
+                'name' => 'Parent',
+                'description' => 'Child monitoring access',
+                'level' => 15
+            ],
+            'guest' => [
+                'name' => 'Guest',
+                'description' => 'Limited access',
+                'level' => 10
+            ]
+        ];
+
+        $this->displayRoleTable($allRoles);
+        $this->customRoles = array_values($allRoles);
+    }
+
+    protected function displayRoleTable($roles)
+    {
+        $this->table(
+            ['Role', 'Description', 'Level'],
+            collect($roles)->map(function ($role) {
+                return [
+                    $role['name'],
+                    $role['description'],
+                    $role['level']
+                ];
+            })->toArray()
+        );
+    }
+
+    protected function getRoleLevel($roleKey)
+    {
+        $levels = [
+            'super_admin' => 100,
+            'admin' => 90,
+            'moderator' => 60,
+            'manager' => 70,
+            'teacher' => 50,
+            'employee' => 40,
+            'user' => 30,
+            'customer' => 20,
+            'student' => 25,
+            'parent' => 15,
+            'guest' => 10
+        ];
+
+        return $levels[$roleKey] ?? 30;
+    }
+
 
     protected function configureDashboard()
     {
