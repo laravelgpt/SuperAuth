@@ -20,6 +20,9 @@ use SuperAuth\Livewire\Components\PasswordStrength;
 use SuperAuth\Livewire\Components\BreachCheck;
 use SuperAuth\Livewire\Components\EnhancedPasswordStrength;
 use SuperAuth\Livewire\Components\EnhancedBreachCheck;
+use SuperAuth\Core\DynamicRouter;
+use SuperAuth\Core\FeatureManager;
+use SuperAuth\Core\ThemeManager;
 
 class SuperAuthServiceProvider extends ServiceProvider
 {
@@ -29,6 +32,14 @@ class SuperAuthServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../config/superauth.php', 'superauth');
+        $this->mergeConfigFrom(__DIR__.'/../config/superauth-routes.php', 'superauth.routes');
+        
+        // Register core services
+        $this->app->singleton(FeatureManager::class);
+        $this->app->singleton(ThemeManager::class);
+        $this->app->singleton(DynamicRouter::class, function ($app) {
+            return new DynamicRouter($app->make(FeatureManager::class));
+        });
         
         // Register services
         $this->app->singleton(\SuperAuth\Services\SecureLoggingService::class);
@@ -65,6 +76,9 @@ class SuperAuthServiceProvider extends ServiceProvider
             __DIR__.'/../resources/css' => public_path('vendor/superauth/css'),
             __DIR__.'/../resources/js' => public_path('vendor/superauth/js'),
         ], 'superauth-assets');
+
+        // Register dynamic routes
+        $this->app->make(DynamicRouter::class)->registerRoutes();
 
         // Publish bootstrap configuration
         $this->publishes([
