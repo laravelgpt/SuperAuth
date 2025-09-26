@@ -15,6 +15,7 @@ use SuperAuth\Livewire\Admin\UserManagement;
 use SuperAuth\Livewire\Admin\RoleManagement;
 use SuperAuth\Livewire\Admin\UserRoleAssignment;
 use SuperAuth\Livewire\Admin\AiDashboard;
+use SuperAuth\Livewire\User\Dashboard as UserDashboard;
 use SuperAuth\Livewire\Components\PasswordStrength;
 use SuperAuth\Livewire\Components\BreachCheck;
 use SuperAuth\Livewire\Components\EnhancedPasswordStrength;
@@ -130,6 +131,7 @@ class SuperAuthServiceProvider extends ServiceProvider
             Livewire::component('superauth.role-management', RoleManagement::class);
             Livewire::component('superauth.user-role-assignment', UserRoleAssignment::class);
             Livewire::component('superauth.ai-dashboard', AiDashboard::class);
+            Livewire::component('superauth.user-dashboard', UserDashboard::class);
         }
     }
 
@@ -141,6 +143,7 @@ class SuperAuthServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 \SuperAuth\Console\Commands\InstallCommand::class,
+                \SuperAuth\Console\Commands\InstallWizardCommand::class,
                 \SuperAuth\Console\Commands\CreateDefaultRolesCommand::class,
                 \SuperAuth\Console\Commands\CleanupExpiredRolesCommand::class,
                 \SuperAuth\Console\Commands\RoleStatsCommand::class,
