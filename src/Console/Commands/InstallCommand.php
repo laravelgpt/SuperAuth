@@ -275,10 +275,90 @@ class InstallCommand extends Command
         $this->info('🏠 Step 3: Configure Dashboard');
         $this->newLine();
 
-        $this->dashboardUrl = $this->ask('Enter dashboard URL', '/dashboard');
-        
+        // Show dashboard options
+        $dashboardOptions = [
+            '/dashboard' => 'Standard dashboard (/dashboard)',
+            '/admin' => 'Admin panel (/admin)',
+            '/panel' => 'User panel (/panel)',
+            '/app' => 'Application dashboard (/app)',
+            '/home' => 'Home dashboard (/home)',
+            'custom' => 'Custom URL (enter manually)'
+        ];
+
+        $this->line('📋 Available dashboard options:');
+        foreach ($dashboardOptions as $url => $description) {
+            $this->line("  • {$url}: {$description}");
+        }
+        $this->newLine();
+
+        $choice = $this->choice(
+            'Select dashboard URL or choose custom:',
+            array_keys($dashboardOptions),
+            '/dashboard'
+        );
+
+        if ($choice === 'custom') {
+            $this->dashboardUrl = $this->askForCustomDashboardUrl();
+        } else {
+            $this->dashboardUrl = $choice;
+        }
+
+        // Validate dashboard URL
+        $this->validateDashboardUrl();
+
         $this->info("✅ Dashboard URL set to: {$this->dashboardUrl}");
         $this->newLine();
+    }
+
+    protected function askForCustomDashboardUrl()
+    {
+        while (true) {
+            $url = $this->ask('Enter custom dashboard URL (must start with /)', '/dashboard');
+            
+            if (empty($url)) {
+                $this->error('Dashboard URL cannot be empty.');
+                continue;
+            }
+
+            if (!str_starts_with($url, '/')) {
+                $this->error('Dashboard URL must start with /.');
+                continue;
+            }
+
+            if (strlen($url) < 2) {
+                $this->error('Dashboard URL must be at least 2 characters long.');
+                continue;
+            }
+
+            // Check for common conflicts
+            $conflicts = ['/login', '/register', '/logout', '/api', '/admin', '/auth'];
+            if (in_array($url, $conflicts)) {
+                if (!$this->confirm("Warning: '{$url}' might conflict with existing routes. Continue anyway?", false)) {
+                    continue;
+                }
+            }
+
+            return $url;
+        }
+    }
+
+    protected function validateDashboardUrl()
+    {
+        // Additional validation
+        if (str_contains($this->dashboardUrl, ' ')) {
+            $this->error('Dashboard URL cannot contain spaces.');
+            $this->dashboardUrl = $this->ask('Enter a valid dashboard URL', '/dashboard');
+        }
+
+        if (str_contains($this->dashboardUrl, '..')) {
+            $this->error('Dashboard URL cannot contain ".." for security reasons.');
+            $this->dashboardUrl = $this->ask('Enter a valid dashboard URL', '/dashboard');
+        }
+
+        // Ensure it starts with /
+        if (!str_starts_with($this->dashboardUrl, '/')) {
+            $this->dashboardUrl = '/' . ltrim($this->dashboardUrl, '/');
+        }
     }
 
     protected function setupAdminUser()
@@ -423,6 +503,12 @@ class InstallCommand extends Command
         $this->line('║  1. Configure your .env file with database settings          ║');
         $this->line('║  2. Run: php artisan serve                                   ║');
         $this->line('║  3. Visit: http://localhost:8000' . $this->dashboardUrl . '           ║');
+        $this->line('║                                                              ║');
+        $this->line('║  Dashboard Access:                                           ║');
+        $this->line('║  • Main Dashboard: http://localhost:8000' . $this->dashboardUrl . '     ║');
+        if ($this->adminEmail) {
+            $this->line('║  • Login with: ' . $this->adminEmail . '                    ║');
+        }
         $this->line('║                                                              ║');
         $this->line('║  Documentation: https://github.com/laravelgpt/SuperAuth      ║');
         $this->line('╚══════════════════════════════════════════════════════════════╝');
